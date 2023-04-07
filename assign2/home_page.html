@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign In/Sign Up</title>
+    <style>
+        body {
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            font-family: Helvetica Arial sans-serif;
+            background: bisque;
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            margin: 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome!</h1>
+    <button onclick="window.location.href='/login'"><a href="/login">Sign Up</a></button>
+    <button onclick="window.location.href='/register'"> <a href="/register">Sign In</a></button>
+</body>
+</html>
