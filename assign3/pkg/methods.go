@@ -11,13 +11,13 @@ var db *gorm.DB
 
 //db.AutoMigrate(&Book{})
 
-func getBooks(c *gin.Context) {
+func GetBooks(c *gin.Context) {
 	var books []Book
 	db.Find(&books)
 	c.JSON(http.StatusOK, books)
 }
 
-func getBookByID(c *gin.Context) {
+func GetBookByID(c *gin.Context) {
 	var book Book
 	if err := db.Where("id=?", c.Param("id")).First(&book).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
@@ -26,7 +26,7 @@ func getBookByID(c *gin.Context) {
 	c.JSON(http.StatusOK, book)
 }
 
-func addBook(c *gin.Context) {
+func AddBook(c *gin.Context) {
 	var book Book
 	if err := c.BindJSON(&book); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -36,7 +36,7 @@ func addBook(c *gin.Context) {
 	c.JSON(http.StatusCreated, book)
 }
 
-func updateBook(c *gin.Context) {
+func UpdateBookByID(c *gin.Context) {
 	var book Book
 	if err := db.Where("id=?", c.Param("id")).First(&book).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
@@ -50,7 +50,7 @@ func updateBook(c *gin.Context) {
 	c.JSON(http.StatusOK, book)
 }
 
-func deleteBook(c *gin.Context) {
+func DeleteBookByID(c *gin.Context) {
 	var book Book
 	if err := db.Where("id=?", c.Param("id")).First(&book).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
@@ -60,7 +60,7 @@ func deleteBook(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func searchBookByName(c *gin.Context) {
+func SearchBookByName(c *gin.Context) {
 	var books []Book
 	if err := db.Where("title LIKE ?", "%"+c.Query("title")+"%").Find(&books).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed tosearch books"})
@@ -69,7 +69,7 @@ func searchBookByName(c *gin.Context) {
 	c.JSON(http.StatusOK, books)
 }
 
-func getSortedBooks(c *gin.Context) {
+func GetSortedBooks(c *gin.Context) {
 	var books []Book
 	order := c.Query("order")
 	if order == "desk" {

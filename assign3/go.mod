@@ -1,4 +1,4 @@
-module mymodule
+module github.com/NurtasSerikkanov/Golang2023/assign3
 
 go 1.19
 

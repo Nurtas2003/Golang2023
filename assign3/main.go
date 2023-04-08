@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
+	a "github.com/NurtasSerikkanov/Golang2023/assign3/pkg"
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"gorm.io/gorm"
 	"net/http"
@@ -16,29 +17,30 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Initialize Gin router
-	//r := gin.Default()
+	r := gin.Default()
 
 	// Define REST endpoints
-	//r.GET("/books", getBooks)
-	//r.GET("/books/:id", getBookByID)
-	//r.POST("/books", addBook)
-	//r.PUT("/books/:id", updateBookByID)
-	//r.DELETE("/books/:id", deleteBookByID)
-	//r.GET("/search", searchBooks)
-	//r.GET("/sorted-books", getSortedBooks)
+	r.GET("/books", a.GetBooks)
+	r.GET("/books/:id", a.GetBookByID)
+	r.POST("/books", a.AddBook)
+	r.PUT("/books/:id", a.UpdateBookByID)
+	r.DELETE("/books/:id", a.DeleteBookByID)
+	r.GET("/search", a.SearchBookByName)
+	r.GET("/sorted-books", a.GetSortedBooks)
 
-	//db.AutoMigrate(&pkg.Book{})
-	router := mux.NewRouter()
-
-	router.HandleFunc("/", homePage).Methods("GET")
-	router.HandleFunc("/books", controller.getBooks).Methods("GET")
-	router.HandleFunc("/books/", controller.getSortedBooks).Methods("GET")
-	router.HandleFunc("/books/{id}", controller.getBooksById).Methods("GET")
-	router.HandleFunc("/books", controller.addBook).Methods("POST")
-	router.HandleFunc("/books/{id}", controller.updateBook).Methods("PUT")
+	//db.AutoMigrate(&.Book{})
+	//router := mux.NewRouter()
+	//router.HandleFunc("/", homePage).Methods("GET")
+	//router.HandleFunc("/books/", a.GetBooks).Methods("GET")
+	//router.HandleFunc("/books/sort/", a.GetSortedBooks).Methods("GET")
+	//router.HandleFunc("/books/{id}/", a.getBookById).Methods("GET")
+	//router.HandleFunc("/books/add/", a.AddBook).Methods("POST")
+	//router.HandleFunc("/books/{id}/update/", a.UpdateBook).Methods("PUT")
+	//router.HandleFunc("/books/{id}/delete/", a.DeleteBook).Methods("DELETE")
+	//router.HandleFunc("/books/", a.SearchBookByName).Methods("GET")
 	// Start the server
 	fmt.Println("Server at 8080")
-	errr := http.ListenAndServe(":7575", router)
+	errr := http.ListenAndServe(":7575", r)
 	if errr != nil {
 		fmt.Println(errr)
 	}
