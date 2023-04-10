@@ -3,45 +3,48 @@ package main
 import (
 	"fmt"
 	a "github.com/NurtasSerikkanov/Golang2023/assign3/pkg"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 var db *gorm.DB
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello")
-}
-
 func main() {
-	// Initialize Gin router
-	r := gin.Default()
+	// Load environment variables
+	err := godotenv.Load(".env")
 
-	// Define REST endpoints
-	r.GET("/books", a.GetBooks)
-	r.GET("/books/:id", a.GetBookByID)
-	r.POST("/books", a.AddBook)
-	r.PUT("/books/:id", a.UpdateBookByID)
-	r.DELETE("/books/:id", a.DeleteBookByID)
-	r.GET("/search", a.SearchBookByName)
-	r.GET("/sorted-books", a.GetSortedBooks)
+	// Create DSN string for connecting to Postgres database
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Almaty",
+		os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
 
-	//db.AutoMigrate(&.Book{})
-	//router := mux.NewRouter()
-	//router.HandleFunc("/", homePage).Methods("GET")
-	//router.HandleFunc("/books/", a.GetBooks).Methods("GET")
-	//router.HandleFunc("/books/sort/", a.GetSortedBooks).Methods("GET")
-	//router.HandleFunc("/books/{id}/", a.getBookById).Methods("GET")
-	//router.HandleFunc("/books/add/", a.AddBook).Methods("POST")
-	//router.HandleFunc("/books/{id}/update/", a.UpdateBook).Methods("PUT")
-	//router.HandleFunc("/books/{id}/delete/", a.DeleteBook).Methods("DELETE")
-	//router.HandleFunc("/books/", a.SearchBookByName).Methods("GET")
-	// Start the server
-	fmt.Println("Server at 8080")
-	errr := http.ListenAndServe(":7575", r)
-	if errr != nil {
-		fmt.Println(errr)
+	// Parse port to integer
+	_, err = strconv.Atoi(os.Getenv("DB_PORT"))
+	if err != nil {
+		log.Fatalf("Error parsing DB_PORT: %v", err)
 	}
+
+	// Connect to Postgres database using gorm
+	db, _ := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	err = db.AutoMigrate(&a.Book{})
+
+	c := a.Connection{DB: db}
+
+	router := mux.NewRouter()
+
+	router.HandleFunc("/books/", c.GetAllBooks).Methods("GET")
+	router.HandleFunc("/books/{id}/", c.GetBookByID).Methods("GET")
+	router.HandleFunc("/addbook/", c.AddBook).Methods("POST")
+	router.HandleFunc("/updatebooks/{id}/", c.UpdateBook).Methods("PUT")
+	router.HandleFunc("/deletebooks/{id}/", c.DeleteBookByID).Methods("DELETE")
+	//router.HandleFunc("/search/", controller.SearchBookByTitle).Methods("GET")
+	router.HandleFunc("/sorted-books/", c.GetSortedBooks).Methods("GET")
+
+	http.ListenAndServe(":8080", router)
 }

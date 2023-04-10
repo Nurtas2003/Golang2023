@@ -4,7 +4,8 @@ import "gorm.io/gorm"
 
 type Book struct {
 	gorm.Model
-	Title       string  `gorm:"unique"`
-	Description string  `json:"description"`
-	Cost        float32 `json:"cost"`
+	ID          uint    `gorm:"primary key"`
+	Title       string  `gorm:"type:varchar(255);not null"`
+	Description string  `gorm:"type:text"`
+	Cost        float32 `gorm:"not null"`
 }
