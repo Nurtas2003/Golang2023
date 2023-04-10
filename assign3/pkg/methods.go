@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"gorm.io/gorm"
@@ -72,8 +73,11 @@ func (c *Connection) DeleteBookByID(w http.ResponseWriter, r *http.Request) {
 	c.DB.Delete(&Book{}, params["id"])
 }
 
-func SearchBookByTitle(w http.ResponseWriter, r *http.Request) {
-
+func (c *Connection) SearchBookByTitle(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var books []Book
+	c.DB.Where("title LIKE ?", "%"+params["title"]+"%").Find(&books)
+	json.NewEncoder(w).Encode(books)
 }
 
 func (c *Connection) GetSortedBooks(w http.ResponseWriter, r *http.Request) {
@@ -81,8 +85,28 @@ func (c *Connection) GetSortedBooks(w http.ResponseWriter, r *http.Request) {
 	sort := r.URL.Query().Get("sort")
 	parts := strings.Split(sort, "-")
 	sorting := strings.Join(parts, " ")
+	fmt.Println(parts)
 	if sorting == "" {
 		sorting = "id asc"
+	}
+	if err := c.DB.Order(sorting).Find(&book).Error; err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := json.NewEncoder(w).Encode(book); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (c *Connection) DescGetSortedBooks(w http.ResponseWriter, r *http.Request) {
+	var book []Book
+	sort := r.URL.Query().Get("sort")
+	parts := strings.Split(sort, "-")
+	sorting := strings.Join(parts, " ")
+	fmt.Println(parts)
+	if sorting == "" {
+		sorting = "id desc"
 	}
 	if err := c.DB.Order(sorting).Find(&book).Error; err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
