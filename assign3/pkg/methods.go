@@ -15,13 +15,8 @@ type Connection struct {
 }
 
 func (c *Connection) GetAllBooks(w http.ResponseWriter, r *http.Request) {
-	title := r.URL.Query().Get("title")
 	books := make([]Book, 0)
-	if title != "" {
-		c.DB.Where("title LIKE ?", title+"%").Find(&books)
-	} else {
-		c.DB.Find(&books)
-	}
+	c.DB.Find(&books)
 	err := json.NewEncoder(w).Encode(books)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

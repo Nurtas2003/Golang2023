@@ -17,20 +17,16 @@ import (
 var db *gorm.DB
 
 func main() {
-	// Load environment variables
 	err := godotenv.Load(".env")
 
-	// Create DSN string for connecting to Postgres database
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Almaty",
 		os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
 
-	// Parse port to integer
 	_, err = strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {
 		log.Fatalf("Error parsing DB_PORT: %v", err)
 	}
 
-	// Connect to Postgres database using gorm
 	db, _ := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	err = db.AutoMigrate(&a.Book{})
 
